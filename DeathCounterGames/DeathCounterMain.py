@@ -15,12 +15,22 @@ def main(page: ft.Page):
     death_text = ft.Text(f"Deaths: {deaths}", size=30, weight=ft.FontWeight.BOLD)
 
     # Event Functions
+    # Add Deaths Function to add to the death counter and update the UI
     def add_death(e=None):
         nonlocal deaths
         deaths += 1
         death_text.value = f"Deaths: {deaths}"
         page.update()
 
+    # Subtract Deaths Function to subtract from the death counter and update the UI
+    def subtract_death(e=None):
+        nonlocal deaths
+        if deaths > 0:
+            deaths -= 1
+        death_text.value = f"Deaths: {deaths}"
+        page.update()
+
+    # Reset Deaths Function to reset the death counter and update the UI
     def reset_deaths(e):
         nonlocal deaths
         deaths = 0
@@ -31,6 +41,8 @@ def main(page: ft.Page):
     def on_press(key):
         if getattr(key, "char", None) == "+":
             page.run_thread(add_death)
+        elif getattr(key, "char", None) == "-":
+            page.run_thread(subtract_death)
 
     listener = keyboard.Listener(on_press=on_press)
     listener.start()
@@ -41,6 +53,7 @@ def main(page: ft.Page):
         death_text,
         ft.Row([
             ft.Button("+1", on_click=add_death),
+            ft.Button("-1", on_click=subtract_death),
             ft.Button("Reset", on_click=reset_deaths),
         ])
     )
