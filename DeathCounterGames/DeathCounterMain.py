@@ -1,6 +1,13 @@
 import flet as ft
 import json
+import os
+import sys
 from pynput import keyboard
+
+def resource_path(relative_path):
+    """Find bundled files inside PyInstaller's temp folder or locally in VS Code."""
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 def main(page: ft.Page):
 
@@ -14,6 +21,7 @@ def main(page: ft.Page):
 
     # Window Always on Top & Dark Mode & Title
     page.window.always_on_top = True
+    page.window.icon = resource_path("icon.ico")
     page.theme_mode = ft.ThemeMode.DARK
     page.title = "Death Counter"
 
