@@ -7,6 +7,12 @@ def main(page: ft.Page):
     # Window Sizes & Behavior
     page.window.width = 350
     page.window.height = 250
+
+    # Minimum Window Sizes
+    page.window.min_width = 200
+    page.window.min_height = 190
+
+    # Window Always on Top & Dark Mode & Title
     page.window.always_on_top = True
     page.theme_mode = ft.ThemeMode.DARK
     page.title = "Death Counter"
@@ -15,8 +21,15 @@ def main(page: ft.Page):
     deaths = 0
     add_key = "+"
     sub_key = "-"
+
+    # User Text Fields 
     death_text = ft.Text(f"Deaths: {deaths}", size=30, weight=ft.FontWeight.BOLD)
-    game_input = ft.TextField(label="Game Name", hint_text="Enter Game Name")
+
+    game_input = ft.TextField(
+        hint_text="Enter Game Name",
+        dense=True,
+        content_padding=8,
+    )
 
     # Event Functions
     
@@ -110,10 +123,12 @@ def main(page: ft.Page):
     # Save Settings Function to save the hotkey settings and update the UI
     def save_settings(e):
         nonlocal add_key, sub_key
-        if add_key_input.value:
-            add_key = add_key_input.value
-        if sub_key_input.value:
-            sub_key = sub_key_input.value
+        new_add = (add_key_input.value or "").strip()
+        new_sub = (sub_key_input.value or "").strip()
+        if new_add:
+            add_key = new_add
+        if new_sub and new_sub != add_key:
+            sub_key = new_sub
         page.pop_dialog()
 
     # Settings Dialog to change the hotkey settings
@@ -130,12 +145,30 @@ def main(page: ft.Page):
         sub_key_input.value = sub_key
         page.show_dialog(settings_dialog)
 
+    def on_resize(e):
+        if not page.width or not page.height:
+            return
+        smaller_side = min(page.width, page.height)
+
+        # Scale Deaths label (18px to 48px)
+        death_text.size = max(18, min(48, int(smaller_side * 0.13)))
+
+        # Scale Game Name input text (12px to 18px)
+        game_input.text_size = max(12, min(18, int(smaller_side * 0.06)))
+
+        # Tighten vertical gaps between rows when the window is compact
+        page.spacing = 4 if page.height < 230 else 10
+
+        page.update()
+
+    page.on_resize = on_resize
+
     # Add Controls to Page & Connect on_click
     page.add(
         ft.Row(
             [
                 ft.PopupMenuButton(
-                    content=ft.Text("File"),
+                    content=ft.Text("File", size=13),
                     items=[
                         ft.PopupMenuItem(content="Save Game", on_click=save_game),
                         ft.PopupMenuItem(content="Open Game", on_click=open_game),
@@ -144,15 +177,16 @@ def main(page: ft.Page):
                 ft.TextButton("Settings", on_click=open_settings),
             ],
             alignment=ft.MainAxisAlignment.START,
+            height=30,
         ),
 
         # Game Name Input, Death Counter Display, and Control Buttons
         game_input,
         death_text,
         ft.Row([
-            ft.Button("+1", on_click=add_death),
-            ft.Button("-1", on_click=subtract_death),
-            ft.Button("Reset", on_click=reset_deaths),
+            ft.Button("+1", on_click=add_death, expand=True),
+            ft.Button("-1", on_click=subtract_death, expand=True),
+            ft.Button("Reset", on_click=reset_deaths, expand=True),
         ])
     )
 
