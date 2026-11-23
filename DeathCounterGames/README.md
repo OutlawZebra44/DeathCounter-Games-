@@ -28,20 +28,3 @@ A lightweight, LiveSplit-style desktop death counter overlay built with Python a
 | **Change Hotkeys** | — | Top Menu > **`Settings`** |
 | **Save / Open Run** | — | Top Menu > **`File`** |
 
-## Running From Source
-
-If you want to run or modify the Python script directly:
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com
-   cd YOUR_REPO_NAME
-   ```
-2. Install the required libraries:
-   ```bash
-   pip install flet pynput
-   ```
-3. Run the app:
-   ```bash
-   python DeathCounterMain.py
-   ```
